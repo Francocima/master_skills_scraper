@@ -1,0 +1,15 @@
+# kinsta.yaml
+services:
+- name: seek-scraper
+  image: ${KINSTA_REGISTRY}/seek-scraper:latest
+  envs:
+  - key: PORT
+    value: "8080"
+  ports:
+  - port: 8080
+    protocol: HTTP
+  resources:
+    cpu: 0.5
+    memory: 512Mi
+  health_check:
+    path: /health
