@@ -22,7 +22,7 @@ app = FastAPI(
 
 #Define the data model for the job search
 class JobSearchRequest(BaseModel):
-    url: HttpUrl
+    search_url: HttpUrl
     max_pages: Optional[int] = None
     posted_time_limit: Optional[str] = None
     num_jobs: Optional[int] = None
