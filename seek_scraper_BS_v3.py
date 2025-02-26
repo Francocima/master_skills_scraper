@@ -526,25 +526,6 @@ async def run_scrape_job(job_id: str, request: JobSearchRequest):
         json.dump(status, f)
 
 
-
-#async def main():
-    """
-    Main function to run the scraper
-    """
-    search_url = "https://www.seek.com.au/data-analyst-jobs/in-Townsville-QLD-4810?sortmode=ListedDate"
-
-    start_time = time.time()
-    
-    async with SeekScraper() as scraper:
-        jobs_data = await scraper.scrape_jobs(search_url, posted_time_limit="1d ago", max_pages=2)
-        if jobs_data:
-            await scraper.save_to_json(jobs_data)
-            print(f"\nScraped {len(jobs_data)} jobs successfully!")
-            print(f"Time taken: {time.time() - start_time:.2f} seconds")
-        else:
-            print("No jobs were scraped. Check the debug output above for details.")
-
-
 if __name__ == "__main__":
     # Determine port - use environment variable if available
     port = int(os.environ.get("PORT", 8080))
