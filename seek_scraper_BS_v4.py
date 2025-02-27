@@ -110,6 +110,20 @@ class SeekScraper:
         return None
 
 
+    #Helps sanitize the text extracted from the website, avoiding Unicode errors.
+    def sanitize_text(self, text):
+            if not isinstance(text, str):
+                return str(text)
+        
+    # Replace surrogate pairs and other problematic characters
+            try:
+        # First attempt: encode with surrogateescape and decode back
+                return text.encode('utf-8', 'surrogateescape').decode('utf-8', 'replace')
+            except UnicodeError:
+        # Second attempt: more aggressive replacement
+                return text.encode('utf-8', 'replace').decode('utf-8')
+
+
     #extraction of the job details
     async def extract_job_details(self, job_url: str) -> Dict: #once we have the job_url (defined later), the function will extract the details and added to a dictionary
         """
@@ -135,22 +149,23 @@ class SeekScraper:
                 
             # Extract job title
             try:
-                title_element = soup.select_one('[data-automation="job-detail-title"], .j1ww7nx7') #searches for the title_element variable using the CSS selector
-                job_details['title'] = title_element.text.strip() if title_element else "Title not found" #the key 'title' will be populated with the value title_element after being striped
+                title_element = soup.select_one('[data-automation="job-detail-title"], .j1ww7nx7')
+                job_details['title'] = self.sanitize_text(title_element.text.strip() if title_element else "Title not found")
             except Exception as e:
                 job_details['title'] = "Title not found"
                 
             # Extract company name
             try:
-                company_element = soup.select_one('[data-automation="advertiser-name"], .y735df0') #searches for the company_element variable using the CSS selector
-                job_details['company'] = company_element.text.strip() if company_element else "Company not found"
+                company_element = soup.select_one('[data-automation="advertiser-name"], .y735df0')
+                job_details['company'] = self.sanitize_text(company_element.text.strip() if company_element else "Company not found")
             except Exception as e:
                 job_details['company'] = "Company not found"
+              
                 
             # Extract job requirements/description
             try:
                 description_element = soup.select_one('[data-automation="jobAdDetails"], .YCeva_0')
-                job_details['requirements'] = description_element.text.strip() if description_element else "Requirements not found"
+                job_details['requirements'] = self.sanitize_text(description_element.text.strip() if description_element else "Requirements not found")
             except Exception as e:
                 job_details['requirements'] = "Requirements not found"
                 
@@ -176,6 +191,10 @@ class SeekScraper:
             print(f"Error extracting job details: {str(e)}")
             return None
 
+    
+
+
+    #This function will get the next page URL
     async def get_next_page_url(self, soup: BeautifulSoup, current_page: int) -> str:
         """
         Get the URL for the next page of search results
@@ -269,6 +288,9 @@ class SeekScraper:
         
         print(f"Comparing job time ({job_days:.2f} days) with limit ({limit_days:.2f} days)")
         return job_days <= limit_days
+
+
+
 
     async def scrape_jobs(self, search_url: str, num_jobs: int = None, max_pages: int = None, posted_time_limit: str = None) -> List[Dict]:
         """
@@ -379,7 +401,7 @@ class SeekScraper:
             for key, value in job.items():
                 if key in ['title', 'company', 'requirements', 'posting_time']:
                     # Ensure these values are strings
-                    scraped_job[key] = str(value)
+                    scraped_job[key] = self.sanitize_text(value)
                 else:
                     scraped_job[key] = value
             scraped_jobs.append(scraped_job)
@@ -442,7 +464,13 @@ async def scrape_jobs_endpoint(request: JobSearchRequest):
         for job in jobs_data:
             serializable_job = {}
             for key, value in job.items():
-                serializable_job[key] = str(value) if isinstance(value, (type, object)) and not isinstance(value, (int, float, bool, str, list, dict, type(None))) else value
+                # Use sanitize_text for string values
+                if isinstance(value, str):
+                    serializable_job[key] = scraper.sanitize_text(value)
+                elif isinstance(value, (type, object)) and not isinstance(value, (int, float, bool, str, list, dict, type(None))):
+                    serializable_job[key] = str(value)
+                else:
+                    serializable_job[key] = value
             serializable_jobs.append(serializable_job)
         
         return {
