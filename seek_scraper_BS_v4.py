@@ -26,6 +26,7 @@ class JobSearchRequest(BaseModel):
     max_pages: Optional[int] = None
     posted_time_limit: Optional[str] = None
     num_jobs: Optional[int] = None
+    job_title_filter= Optional[str] = None
 
 #Create class for all the functions regarding scraping
 class SeekScraper:
@@ -289,7 +290,23 @@ class SeekScraper:
         print(f"Comparing job time ({job_days:.2f} days) with limit ({limit_days:.2f} days)")
         return job_days <= limit_days
 
+       
+        def job_title_conditional_filter(self, job_title:str, search_term: str) -> bool:
+        """
+        Check if the job title contains the search term
 
+        Args:
+            job_title: The job title to check
+            search_term: The text to search for in the title
+            
+        Returns:
+            Boolean indicating if the search term is found in the title
+
+
+        """
+        if not search_term:
+            return True        
+        return search_term.lower() in job_title.lower()
 
 
     async def scrape_jobs(self, search_url: str, num_jobs: int = None, max_pages: int = None, posted_time_limit: str = None) -> List[Dict]:
@@ -331,6 +348,18 @@ class SeekScraper:
                         return all_jobs_data
 
                     try:
+                        # Get the job title from the card first
+                        title_element = card.select_one('[data-automation="job-detail-title"]')
+                        if not title_element:
+                            continue
+                            
+                        job_title = title_element.text.strip()
+                        
+                        # Skip this job if it doesn't match the title filter
+                        if not self._matches_title_criteria(job_title, job_title_filter):
+                            print(f"Skipping job - title doesn't match filter: {job_title}")
+                            continue                        
+                        
                         # Get the job link
                         link_element = card.select_one('a')
                         if not link_element or not link_element.has_attr('href'):
@@ -453,7 +482,8 @@ async def scrape_jobs_endpoint(request: JobSearchRequest):
                 str(request.search_url),
                 num_jobs=request.num_jobs,
                 max_pages=request.max_pages,
-                posted_time_limit=request.posted_time_limit
+                posted_time_limit=request.posted_time_limit,
+                job_title_filter=request.job_title_filter
             )
 
         elapsed_time = time.time() - start_time
