@@ -291,7 +291,7 @@ class SeekScraper:
         return job_days <= limit_days
 
        
-        def job_title_conditional_filter(self, job_title:str, job_title_filter: str) -> bool:
+    def job_title_conditional_filter(self, job_title:str, job_title_filter: str) -> bool:
         """
         Check if the job title contains the search term
 
