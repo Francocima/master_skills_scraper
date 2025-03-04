@@ -291,7 +291,7 @@ class SeekScraper:
         return job_days <= limit_days
 
        
-    def job_title_conditional_filter(self, job_title:str, job_title_filter: str) -> bool:
+    def job_title_conditional_filter(self, job_title:str, job_title_filter: Optional[str]) -> bool:
         """
         Check if the job title contains the search term
 
@@ -316,7 +316,7 @@ class SeekScraper:
         return all(word in job_title for word in search_words) 
 
 
-    async def scrape_jobs(self, search_url: str, num_jobs: int = None, max_pages: int = None, posted_time_limit: str = None, job_title_filter: str = None) -> List[Dict]:
+    async def scrape_jobs(self, search_url: str, num_jobs: int = None, max_pages: int = None, posted_time_limit: str = None, job_title_filter: Optional[str] = None) -> List[Dict]:
         """
         Scrape job listings from Seek based on search criteria
         
