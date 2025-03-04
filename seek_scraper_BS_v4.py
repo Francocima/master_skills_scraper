@@ -357,7 +357,7 @@ class SeekScraper:
 
                     try:
                         # Get the job title from the card first
-                        title_element = card.select_one('[data-automation="job-detail-title"]')
+                        title_element = card.select_one('[data-automation="jobTitle"]')
                         if not title_element:
                             continue
                             
