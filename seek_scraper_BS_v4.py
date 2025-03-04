@@ -150,9 +150,9 @@ class SeekScraper:
             # Extract job title
             try:
                 title_element = soup.select_one('[data-automation="job-detail-title"], .j1ww7nx7')
-                job_details['title'] = self.sanitize_text(title_element.text.strip() if title_element else "Title not found")
+                job_details['job_title'] = self.sanitize_text(title_element.text.strip() if title_element else "Title not found")
             except Exception as e:
-                job_details['title'] = "Title not found"
+                job_details['job_title'] = "Title not found"
                 
             # Extract company name
             try:
@@ -165,9 +165,9 @@ class SeekScraper:
             # Extract job requirements/description
             try:
                 description_element = soup.select_one('[data-automation="jobAdDetails"], .YCeva_0')
-                job_details['requirements'] = self.sanitize_text(description_element.text.strip() if description_element else "Requirements not found")
+                job_details['job_description'] = self.sanitize_text(description_element.text.strip() if description_element else "Requirements not found")
             except Exception as e:
-                job_details['requirements'] = "Requirements not found"
+                job_details['job_description'] = "Requirements not found"
                 
             # Extract posting time
             try:
@@ -399,7 +399,7 @@ class SeekScraper:
             # Create a new dict with resolved values
             scraped_job = {}
             for key, value in job.items():
-                if key in ['title', 'company', 'requirements', 'posting_time']:
+                if key in ['job_title', 'company', 'job_description', 'posting_time']:
                     # Ensure these values are strings
                     scraped_job[key] = self.sanitize_text(value)
                 else:
