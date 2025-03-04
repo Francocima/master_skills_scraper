@@ -364,7 +364,7 @@ class SeekScraper:
                         job_title = title_element.text.strip()
                         
                         # Skip this job if it doesn't match the title filter
-                        if not self._matches_title_criteria(job_title, job_title_filter):
+                        if not self.job_title_conditional_filter(job_title, job_title_filter):
                             print(f"Skipping job - title doesn't match filter: {job_title}")
                             continue                        
                         
