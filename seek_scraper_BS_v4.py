@@ -26,7 +26,7 @@ class JobSearchRequest(BaseModel):
     max_pages: Optional[int] = None
     posted_time_limit: Optional[str] = None
     num_jobs: Optional[int] = None
-    job_title_filter= Optional[str] = None
+    job_title_filter: Optional[str] = None
 
 #Create class for all the functions regarding scraping
 class SeekScraper:
