@@ -291,25 +291,32 @@ class SeekScraper:
         return job_days <= limit_days
 
        
-        def job_title_conditional_filter(self, job_title:str, search_term: str) -> bool:
+        def job_title_conditional_filter(self, job_title:str, job_title_filter: str) -> bool:
         """
         Check if the job title contains the search term
 
         Args:
             job_title: The job title to check
-            search_term: The text to search for in the title
+            job_title_filter: The text to search for in the title
             
         Returns:
             Boolean indicating if the search term is found in the title
 
 
         """
-        if not search_term:
-            return True        
-        return search_term.lower() in job_title.lower()
+        if not job_title_filter:
+            return True
+
+        # Convert both to lowercase for case-insensitive comparison
+        job_title = job_title.lower()
+        # Split search term into individual words
+        search_words = job_title_filter.lower().split()
+        
+        # Check if all search words appear in the job title
+        return all(word in job_title for word in search_words) 
 
 
-    async def scrape_jobs(self, search_url: str, num_jobs: int = None, max_pages: int = None, posted_time_limit: str = None) -> List[Dict]:
+    async def scrape_jobs(self, search_url: str, num_jobs: int = None, max_pages: int = None, posted_time_limit: str = None, job_title_filter: str = None) -> List[Dict]:
         """
         Scrape job listings from Seek based on search criteria
         
@@ -318,6 +325,7 @@ class SeekScraper:
             num_jobs: Maximum number of jobs to scrape (optional)
             max_pages: Maximum number of pages to scrape (optional)
             posted_time_limit: Only include jobs posted within this time frame (e.g., "1d ago")
+            title_filter: Only include jobs with this text in the title (e.g., "Data Analyst")
             
         Returns:
             List of dictionaries containing job details
