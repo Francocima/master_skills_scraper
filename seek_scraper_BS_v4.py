@@ -21,7 +21,7 @@ app = FastAPI(
 )
 
 #Define the data model for the job search
-class JobSearchRequest(BaseModel):
+##class JobSearchRequest(BaseModel):
     search_url: HttpUrl
     max_pages: Optional[int] = None
     posted_time_limit: Optional[str] = None
@@ -29,7 +29,7 @@ class JobSearchRequest(BaseModel):
     job_title_filter: Optional[str] = None
 
 #Create class for all the functions regarding scraping
-class SeekScraper:
+##class SeekScraper:
     
     def __init__(self):
         """
