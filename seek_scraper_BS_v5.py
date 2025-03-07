@@ -178,8 +178,9 @@ class SeekScraper:
 
             #Extract Location
             try:
-                location_element = soup.select_one('[data-automation="job-detail-location"], .i7p5ej7')
+                location_element = soup.select_one('[data-automation="job-detail-location"], .gepq850')
                 job_details['job_location'] = self.sanitize_text(location_element.text.strip() if location_element else "Location not found")
+                print(job_details['job_location'])
             except Exception as e:
                 job_details['job_location'] = "Location not found"
             
@@ -218,6 +219,7 @@ class SeekScraper:
 
             if job_details['job_title'] != "Title not found":
                 job_details['job_type'] = self.categorize_job_type(job_details['job_title'])
+                print(job_details['job_type'])
             else:
                 job_details['job_type'] = "unknown"
 
@@ -435,7 +437,7 @@ class SeekScraper:
             # Create a new dict with resolved values
             scraped_job = {}
             for key, value in job.items():
-                if key in ['job_title', 'company', 'job_description', 'posting_time', 'job_location', 'job_type']:
+                if key in ['job_title', 'company','job_location', 'job_description', 'posting_time', 'job_type']:
                     # Ensure these values are strings
                     scraped_job[key] = self.sanitize_text(value)
                 else:
@@ -508,10 +510,7 @@ async def scrape_jobs_endpoint(request: JobSearchRequest):
                     serializable_job[key] = str(value)
                 else:
                     serializable_job[key] = value
-            
-            print(f"Serialized has job_location: {'job_location' in serializable_job}")
-            print(f"Serialized has job_type: {'job_type' in serializable_job}")
-            
+                       
             serializable_jobs.append(serializable_job)
         
         return {
