@@ -125,25 +125,7 @@ class SeekScraper:
                 return text.encode('utf-8', 'replace').decode('utf-8')
             
 
-    #Build a job_type categorization for the different job_types
-    def categorize_job_type(self, job_title: str) -> str:
-        """
-        Categorize job types based on the job title 
 
-        """
-        job_title_lower = job_title.lower()
-
-        #check for DA
-        if "data analyst" in job_title_lower:
-            return "Data Analyst"
-        
-        if "data engineer"  in job_title_lower:
-            return "Data Engineer"
-        
-        if "business analyst" in job_title_lower:
-            return "Business Analyst"   
-        
-        return "unknown"
 
 
     #extraction of the job details
@@ -175,14 +157,6 @@ class SeekScraper:
                 job_details['job_title'] = self.sanitize_text(title_element.text.strip() if title_element else "Title not found")
             except Exception as e:
                 job_details['job_title'] = "Title not found"
-
-            #Extract Location
-            try:
-                location_element = soup.select_one('[data-automation="job-detail-location"], .gepq850')
-                job_details['job_location'] = self.sanitize_text(location_element.text.strip() if location_element else "Location not found")
-                print(job_details['job_location'])
-            except Exception as e:
-                job_details['job_location'] = "Location not found"
             
                 
             # Extract company name
@@ -217,11 +191,13 @@ class SeekScraper:
                 job_details['posting_time'] = "Posting time not found"
 
 
-            if job_details['job_title'] != "Title not found":
-                job_details['job_type'] = self.categorize_job_type(job_details['job_title'])
-                print(job_details['job_type'])
-            else:
-                job_details['job_type'] = "unknown"
+            try:
+                # Extract job location
+                location_element = soup.select_one('[data-automation="job-detail-location"], .gepq850')
+                job_details['job_location'] = self.sanitize_text(location_element.text.strip() if location_element else "Location not found")
+            except Exception as e:
+                job_details['job_location'] = "Location not found"
+
 
             return job_details #returns the dictionary after finishing the extraction 
 
@@ -510,7 +486,7 @@ async def scrape_jobs_endpoint(request: JobSearchRequest):
                     serializable_job[key] = str(value)
                 else:
                     serializable_job[key] = value
-                       
+
             serializable_jobs.append(serializable_job)
         
         return {
