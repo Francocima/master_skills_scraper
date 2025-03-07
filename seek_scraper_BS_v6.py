@@ -191,7 +191,7 @@ class SeekScraper:
                 job_details['job_title'] = "Title not found"
 
             #Extract Location
-           try:
+            try:
                 job_details['job_location'] = self.extract_location(soup)
                 print(f"Location: {job_details['job_location']}")
             except Exception as e:
