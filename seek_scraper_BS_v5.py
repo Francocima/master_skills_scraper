@@ -508,6 +508,10 @@ async def scrape_jobs_endpoint(request: JobSearchRequest):
                     serializable_job[key] = str(value)
                 else:
                     serializable_job[key] = value
+            
+            print(f"Serialized has job_location: {'job_location' in serializable_job}")
+            print(f"Serialized has job_type: {'job_type' in serializable_job}")
+            
             serializable_jobs.append(serializable_job)
         
         return {
