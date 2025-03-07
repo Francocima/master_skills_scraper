@@ -134,7 +134,7 @@ class SeekScraper:
         job_title_lower = job_title.lower()
 
         #check for DA
-        if "data anlayst" in job_title_lower:
+        if "data analyst" in job_title_lower:
             return "Data Analyst"
         
         if "data engineer"  in job_title_lower:
@@ -178,7 +178,7 @@ class SeekScraper:
 
             #Extract Location
             try:
-                location_element = soup.select_one('[data-automation="job-detail-location"], i7p5ej7.')
+                location_element = soup.select_one('[data-automation="job-detail-location"], .i7p5ej7')
                 job_details['job_location'] = self.sanitize_text(location_element.text.strip() if location_element else "Location not found")
             except Exception as e:
                 job_details['job_location'] = "Location not found"
