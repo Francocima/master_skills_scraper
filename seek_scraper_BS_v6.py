@@ -123,11 +123,43 @@ class SeekScraper:
             except UnicodeError:
         # Second attempt: more aggressive replacement
                 return text.encode('utf-8', 'replace').decode('utf-8')
+                
+    #Added a function to extract the location in the page
+    def extract_location(self, soup):
+        """
+        Extract job location from HTML using the job-detail-location container
+        and the anchor tag inside it.
+        
+        Args:
+            soup: BeautifulSoup object of the job page
             
+        Returns:
+            str: The location text or "Location not found" if not found
+        """
+        # First try to find the container with data-automation="job-detail-location"
+        location_container = soup.select_one('[data-automation="job-detail-location"]')
+        
+        if location_container:
+            # Look for the anchor tag inside the container
+            location_link = location_container.select_one('a[class*="gepq850"]')
+            if location_link:
+                return self.sanitize_text(location_link.text.strip())
+            
+            # If no specific anchor found, try any anchor or the container text itself
+            location_link = location_container.select_one('a')
+            if location_link:
+                return self.sanitize_text(location_link.text.strip())
+                
+            return self.sanitize_text(location_container.text.strip())
+        
+        # Direct selector for the location anchor if container not found
+        location_link = soup.select_one('a[href*="/jobs/in-"][class*="gepq850"]')
+        if location_link:
+            return self.sanitize_text(location_link.text.strip())
+                
+        return "Location not found"
 
-
-
-
+    
     #extraction of the job details
     async def extract_job_details(self, job_url: str) -> Dict: #once we have the job_url (defined later), the function will extract the details and added to a dictionary
         """
@@ -159,11 +191,11 @@ class SeekScraper:
                 job_details['job_title'] = "Title not found"
 
             #Extract Location
-            try:
-                location_element = soup.select_one('[data-automation="job-detail-location"], .gepq850')
-                job_details['job_location'] = self.sanitize_text(location_element.text.strip() if location_element else "Location not found")
+           try:
+                job_details['job_location'] = self.extract_location(soup)
                 print(f"Location: {job_details['job_location']}")
             except Exception as e:
+                print(f"Error extracting location: {str(e)}")
                 job_details['job_location'] = "Location not found"
             
                 
@@ -224,7 +256,10 @@ class SeekScraper:
         if "data analyst" in job_title_lower:
             return "Data Analyst"
         
-        if "data engineer" or "engineer"  in job_title_lower:
+        if "data engineer"  in job_title_lower:
+            return "Data Engineer"
+
+        if "engineer" in job_title_lower:
             return "Data Engineer"
         
         if "business analyst" in job_title_lower:
