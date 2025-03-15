@@ -263,7 +263,20 @@ class SeekScraper:
             return "Data Engineer"
         
         if "business analyst" in job_title_lower:
-            return "Business Analyst"   
+            return "Business Analyst"  
+
+        if "analytics analyst" in job_title_lower:
+            return "Analytics Engineer" 
+        
+        if "data scientist" in job_title_lower:
+            return "Data Scientist" 
+        
+        if "report developer" in job_title_lower:
+            return "Report Developer" 
+        
+        if "solutions architect" in job_title_lower:
+            return "Solutions Architect"
+        
         
         return "unknown"
 
