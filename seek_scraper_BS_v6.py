@@ -277,7 +277,13 @@ class SeekScraper:
         if "solutions architect" in job_title_lower:
             return "Solutions Architect"
 
+        if "solution architect" in job_title_lower:
+            return "Solutions Architect"
+
         if "test analyst" in job_title_lower:
+            return "Test Analyst"
+
+        if "testing analyst" in job_title_lower:
             return "Test Analyst"
         
         
