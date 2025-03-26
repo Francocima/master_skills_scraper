@@ -92,6 +92,19 @@ class SeekScraper:
         chrome_options.add_argument("--disable-dev-shm-usage")
         chrome_options.add_argument("--disable-gpu")
         
+        chrome_options.add_argument("--disable-software-rasterizer")
+        
+        chrome_options.add_argument("--disable-gl-drawing")
+        chrome_options.add_argument("--disable-accelerated-2d-canvas")
+        chrome_options.add_argument("--disable-web-security")
+        chrome_options.add_argument("--ignore-certificate-errors")
+
+        chrome_options.add_argument("--disable-extensions")
+        chrome_options.add_argument("--disable-background-networking")
+        chrome_options.add_argument("--disable-default-apps")
+
+        
+        
         # Set user agent - Picks randomly from the list
         chrome_options.add_argument(f"user-agent={random.choice(self.user_agents)}")
         
