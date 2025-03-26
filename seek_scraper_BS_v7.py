@@ -739,4 +739,4 @@ if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
     
     # Run the API server
-    uvicorn.run("seek_scraper_BS_v6:app", host="0.0.0.0", port=port, reload=False)
+    uvicorn.run("seek_scraper_BS_v7:app", host="0.0.0.0", port=port, reload=False)
