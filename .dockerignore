@@ -1,0 +1,47 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+env/
+.env/
+.venv/
+
+# Results and output directories
+results/
+*.json
+
+# Logs
+*.log
+
+# IDE and editor directories
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Git and version control
+.git/
+.gitignore
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Development and temporary files
+*.tmp
+*.bak
+
+# Selenium and Chrome driver cache
+.wdm/
+
+# Backup files
+*.backup
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Environment files (if you have any)
+.env
