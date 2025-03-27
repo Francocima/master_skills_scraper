@@ -1,0 +1,45 @@
+[package]
+# Use Python 3.11 as the base image
+runtime = "python:3.11"
+
+# Additional system packages needed
+systems = [
+    "wget",
+    "gnupg",
+    "unzip",
+    "curl"
+]
+
+# Define the build steps
+[build]
+# Install Google Chrome and ChromeDriver
+buildCmd = '''
+    # Add Google Chrome repository
+    wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
+    echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list && \
+    apt-get update && \
+    apt-get install -y google-chrome-stable
+
+    # Dynamically download appropriate ChromeDriver
+    CHROME_VERSION=$(google-chrome --version | cut -d ' ' -f 3 | cut -d '.' -f 1) && \
+    CHROME_DRIVER_VERSION=$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION}) && \
+    ARCH=$(uname -m) && \
+    if [ "$ARCH" = "x86_64" ]; then DRIVER_ARCH="linux64"; \
+    elif [ "$ARCH" = "aarch64" ]; then DRIVER_ARCH="linux64_arm64"; \
+    else DRIVER_ARCH="linux64"; fi && \
+    wget -N http://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_${DRIVER_ARCH}.zip -P /tmp && \
+    unzip /tmp/chromedriver_${DRIVER_ARCH}.zip -d /tmp && \
+    mv /tmp/chromedriver /usr/local/bin/chromedriver && \
+    chmod +x /usr/local/bin/chromedriver
+
+    # Install Python dependencies
+    pip install -r requirements.txt
+'''
+
+# Start command for the application
+[start]
+cmd = "uvicorn seek_scraper_BS_v7:app --host 0.0.0.0 --port $PORT"
+
+# Expose the port
+[ports]
+web = "$PORT"
