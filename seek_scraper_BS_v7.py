@@ -98,23 +98,17 @@ class SeekScraper:
         chrome_options.add_argument("--disable-dev-shm-usage")
         chrome_options.add_argument("--disable-gpu")
 
+        # Add additional privacy options to avoid detection
+        chrome_options.add_argument("--disable-blink-features=AutomationControlled")
+        chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        chrome_options.add_experimental_option("useAutomationExtension", False)
+
 
         # Set user agent - Picks randomly from the list
         chrome_options.add_argument(f"user-agent={random.choice(self.user_agents)}")
     
-                # Add additional privacy options to avoid detection
-        chrome_options.add_argument("--disable-blink-features=AutomationControlled")
-        chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
-        chrome_options.add_experimental_option("useAutomationExtension", False)
-        
-        try:
-            self.driver = uc.Chrome(
-                options=chrome_options,
-                use_subprocess=True  # Recommended for better stability
-            )
-        except Exception as e:
-            # Fallback to standard ChromeDriver
-            self.driver = webdriver.Chrome(
+       
+        self.driver = webdriver.Chrome(
                 service=Service(ChromeDriverManager().install()),
                 options=chrome_options
             )
@@ -123,7 +117,7 @@ class SeekScraper:
         self.driver.set_window_size(1920, 1080)
         
         # Execute JavaScript to mask WebDriver presence
-        self.driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")    
+        self.driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")     
         
 
     async def __aenter__(self): #This will open the session in the browser
