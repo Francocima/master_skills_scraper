@@ -87,33 +87,22 @@ class SeekScraper:
         # Set up the Chrome options
         chrome_options = Options()
         
+        chrome_options.add_argument('--ignore-certificate-errors')
+        chrome_options.add_argument('--allow-insecure-localhost')
+        chrome_options.add_argument('--ignore-ssl-errors=yes')
+        chrome_options.add_argument('--disable-web-security')
+
         # Add headless option for server environments
-        chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--headless=new")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
         chrome_options.add_argument("--disable-gpu")
 
-        chrome_options.add_argument('--disable-blink-features=AutomationControlled')
-        chrome_options.add_argument('--disable-infobars')
-        chrome_options.add_argument('--start-maximized')
-        
-        chrome_options.add_argument("--disable-software-rasterizer")
-        
-        chrome_options.add_argument("--disable-gl-drawing")
-        chrome_options.add_argument("--disable-accelerated-2d-canvas")
-        chrome_options.add_argument("--disable-web-security")
-        chrome_options.add_argument("--ignore-certificate-errors")
 
-        chrome_options.add_argument("--disable-extensions")
-        chrome_options.add_argument("--disable-background-networking")
-        chrome_options.add_argument("--disable-default-apps")
-
-        
-        
         # Set user agent - Picks randomly from the list
         chrome_options.add_argument(f"user-agent={random.choice(self.user_agents)}")
-        
-        # Add additional privacy options to avoid detection
+    
+                # Add additional privacy options to avoid detection
         chrome_options.add_argument("--disable-blink-features=AutomationControlled")
         chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
         chrome_options.add_experimental_option("useAutomationExtension", False)
