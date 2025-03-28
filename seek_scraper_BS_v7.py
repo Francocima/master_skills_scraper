@@ -191,7 +191,7 @@ class SeekScraper:
                 await loop.run_in_executor(None, lambda: self.driver.get(url))
                 
                 # Add a random delay to simulate human behavior
-                await asyncio.sleep(random.uniform(2, 5))
+                await asyncio.sleep(random.uniform(2, 4))
                 
                 # Wait for the page content to load 
                 await loop.run_in_executor(
@@ -606,7 +606,7 @@ class SeekScraper:
                     break
 
                 # Add a random delay between pages
-                await asyncio.sleep(random.uniform(3, 7))
+                await asyncio.sleep(random.uniform(2, 5))
 
                 # Get the next page URL
                 next_page_url = await self.get_next_page_url(soup, current_page)
