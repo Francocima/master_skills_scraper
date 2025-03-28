@@ -523,7 +523,7 @@ class SeekScraper:
         limit_days = self._convert_to_days(time_limit)
         
         print(f"Comparing job time ({job_days:.2f} days) with limit ({limit_days:.2f} days)")
-        return job_days <= limit_days
+        return job_days < limit_days
 
 
     async def scrape_jobs(self, search_url: str, num_jobs: int = None, max_pages: int = None, posted_time_limit: str = None) -> List[Dict]:
