@@ -5,15 +5,15 @@ FROM python:3.11-slim
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Install system dependencies
+# Install essential diagnostic tools
 RUN apt-get update && apt-get install -y \
     bash \
     wget \
+    curl \
     gnupg \
     unzip \
-    # Install dependencies for Chrome
-    libgconf-2-4 \
-    # Install Chrome dependencies
+    file \
+    # Chrome dependencies
     libx11-6 \
     libx11-xcb1 \
     libxcomposite1 \
@@ -27,54 +27,51 @@ RUN apt-get update && apt-get install -y \
     libxrandr2 \
     libgbm1 \
     libatk1.0-0 \
-    libatk-bridge2.0-0 \
-    libpango-1.0-0 \
-    libcairo2 \
-    libgdk-pixbuf2.0-0 \
     libgtk-3-0 \
-    ca-certificates \
-    # Clean up
     && rm -rf /var/lib/apt/lists/*
 
-# Install Google Chrome
-RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+# Comprehensive system and Chrome diagnostic information
+RUN echo "System Information:" \
+    && uname -a \
+    && echo "\nArchitecture:" \
+    && uname -m \
+    && echo "\nCPU Info:" \
+    && cat /proc/cpuinfo | grep "model name" | uniq
+
+# Install Chrome and ChromeDriver with verbose logging
+RUN set -x \
+    && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
     && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list \
     && apt-get update \
     && apt-get install -y google-chrome-stable \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install ChromeDriver
-RUN wget https://storage.googleapis.com/chrome-for-testing-public/134.0.6998.165/linux64/chromedriver-linux64.zip -P /tmp \
-    && unzip /tmp/chromedriver-linux64.zip -d /usr/local/bin/ \
-    && rm /tmp/chromedriver-linux64.zip \
-    && chmod +x /usr/local/bin/chromedriver-linux64/chromedriver \
-    && ln -s /usr/local/bin/chromedriver-linux64/chromedriver /usr/local/bin/chromedriver \
+    && CHROME_VERSION=$(google-chrome --version | cut -d ' ' -f 3 | cut -d '.' -f 1-3) \
+    && echo "Chrome Version: $CHROME_VERSION" \
+    && CHROMEDRIVER_URL="https://storage.googleapis.com/chrome-for-testing-public/${CHROME_VERSION}/linux64/chromedriver-linux64.zip" \
+    && echo "Downloading ChromeDriver from: $CHROMEDRIVER_URL" \
+    && wget -v "$CHROMEDRIVER_URL" -O /tmp/chromedriver.zip \
+    && unzip -v /tmp/chromedriver.zip -d /opt/ \
+    && chmod +x /opt/chromedriver-linux64/chromedriver \
+    && ln -s /opt/chromedriver-linux64/chromedriver /usr/local/bin/chromedriver \
+    && file /opt/chromedriver-linux64/chromedriver \
     && chromedriver --version \
     && google-chrome --version
 
-# Verify Chrome installation
-RUN which google-chrome || echo "Chrome not found"
-
-RUN echo "Chrome Version:" && google-chrome --version \
-    && echo "ChromeDriver Version:" && chromedriver --version \
-    && echo "System Architecture:" && uname -m
-# Set the working directory in the container
+# Set the working directory
 WORKDIR /app
 
-# Copy the requirements file into the container
+# Copy and install dependencies
 COPY requirements.txt .
-
-# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the application code
+# Copy application code
 COPY . .
 
-# Expose the port the app runs on
+# Expose port
 EXPOSE 8080
 
-# Command to run the application
+# Run command
 CMD ["uvicorn", "seek_scraper_BS_v7:app", "--host", "0.0.0.0", "--port", "8080"]
+
 
 
 
