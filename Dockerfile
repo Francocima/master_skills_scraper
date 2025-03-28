@@ -30,14 +30,6 @@ RUN apt-get update && apt-get install -y \
     libgtk-3-0 \
     && rm -rf /var/lib/apt/lists/*
 
-# Comprehensive system and Chrome diagnostic information
-RUN echo "System Information:" \
-    && uname -a \
-    && echo "\nArchitecture:" \
-    && uname -m \
-    && echo "\nCPU Info:" \
-    && cat /proc/cpuinfo | grep "model name" | uniq
-
 # Install Google Chrome
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
     && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list \
@@ -60,7 +52,8 @@ WORKDIR /app
 
 # Copy and install dependencies
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt \
+    && pip install selenium webdriver-manager undetected-chromedriver
 
 # Copy application code
 COPY . .
