@@ -106,11 +106,12 @@ class SeekScraper:
 
         # Set user agent - Picks randomly from the list
         chrome_options.add_argument(f"user-agent={random.choice(self.user_agents)}")
-    
-       
+        
+        chromedriver_path = '/usr/local/bin/chromedriver'
+        
         self.driver = webdriver.Chrome(
-                service=Service(ChromeDriverManager().install()),
-                options=chrome_options
+            service=Service(chromedriver_path),
+            options=chrome_options
             )
             
         # Set window size
