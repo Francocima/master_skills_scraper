@@ -55,6 +55,9 @@ RUN wget https://storage.googleapis.com/chrome-for-testing-public/134.0.6998.165
 # Verify Chrome installation
 RUN which google-chrome || echo "Chrome not found"
 
+RUN echo "Chrome Version:" && google-chrome --version \
+    && echo "ChromeDriver Version:" && chromedriver --version \
+    && echo "System Architecture:" && uname -m
 # Set the working directory in the container
 WORKDIR /app
 
