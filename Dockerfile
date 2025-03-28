@@ -35,13 +35,15 @@ RUN apt-get update && apt-get install -y \
     # Clean up
     && rm -rf /var/lib/apt/lists/*
 
-# Install Google Chrome
-RUN wget https://storage.googleapis.com/chrome-for-testing-public/134.0.6998.165/linux64/chromedriver-linux64.zip -P /tmp \
-    && unzip /tmp/chromedriver-linux64.zip -d /usr/local/bin/ \
-    && rm /tmp/chromedriver-linux64.zip \
-    && chmod +x /usr/local/bin/chromedriver-linux64/chromedriver \
-    && ln -s /usr/local/bin/chromedriver-linux64/chromedriver /usr/local/bin/chromedriver \
-    && chromedriver --version
+# Install Chrome directly using the downloaded .deb package
+RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -O /tmp/chrome.deb \
+    && apt-get update \
+    && apt-get install -y /tmp/chrome.deb \
+    && rm /tmp/chrome.deb \
+    && google-chrome --version
+
+# Verify Chrome installation
+RUN which google-chrome || echo "Chrome not found"
 
 # Set the working directory in the container
 WORKDIR /app
